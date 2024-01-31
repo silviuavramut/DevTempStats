@@ -1,0 +1,7 @@
+service devtempstats_service /vendor/bin/devtempstats_service
+    class hal
+    user system
+    group system
+
+on boot
+    start devtempstats_service

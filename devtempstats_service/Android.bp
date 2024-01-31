@@ -1,0 +1,43 @@
+cc_binary {
+    name: "devtempstats_service",
+    srcs: ["native/src/**/*.cpp"],
+    local_include_dirs: ["native/src/impl"],
+    vendor: true,
+    init_rc: ["devtempstats_service.rc"],
+    shared_libs: [
+        "liblog",
+        "libutils",
+        "libbase",
+        "libbinder_ndk",
+        "devtempstats.service.api-V2-ndk",
+    ],
+    cflags: [
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-Wunused",
+        "-Wunreachable-code",
+        "-Wshadow",
+    ],
+}
+
+aidl_interface {
+    name: "devtempstats.service.api",
+    vendor_available: true,
+    srcs: ["interfaces/**/*.aidl"],
+    local_include_dir: "interfaces",
+
+    stability: "vintf",
+    backend: {
+        java: {
+            enabled: true,
+            platform_apis: true,
+        },
+        cpp: {
+            enabled: true,
+        },
+        ndk: {
+            enabled: true,
+        },
+    },
+}
