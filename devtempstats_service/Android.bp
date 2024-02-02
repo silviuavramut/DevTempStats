@@ -40,4 +40,13 @@ aidl_interface {
             enabled: true,
         },
     },
+    versions_with_info: [
+        {
+            version: "2",
+            imports: [],
+        },
+
+    ],
+    frozen: true,
+
 }
