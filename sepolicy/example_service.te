@@ -2,5 +2,6 @@ type devtempstats_service_exec, exec_type, file_type, vendor_file_type;
 
 allow devtempstats_service devtempstats_service_api:service_manager add;
 allow devtempstats_service servicemanager:binder { call transfer };
+allow system_app devtempstats_service:binder {call transfer};
 
 init_daemon_domain(devtempstats_service)

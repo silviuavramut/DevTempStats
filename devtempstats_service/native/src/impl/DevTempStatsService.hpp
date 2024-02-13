@@ -35,6 +35,25 @@ public:
 
 private:
    static ::std::shared_ptr<DevTempStatsService> S_INSTANCE;
+   void readColumnFromCSV(const std::string& filename, int colIndex, std::vector<float>& columnData);
+   float getCpuNextValue(std::vector<float>& vec);
+   float getGpuNextValue(std::vector<float>& vec);
+   float getAmbientNextValue(std::vector<float>& vec);
+   float calculateMaxValue(const std::vector<float>& vec);
+   float calculateAverageValue(const std::vector<float>& vec);
+
+   float cpuValue();
+   float gpuValue();
+   float ambientValue();
+   float maxCpuValue();
+   float maxGpuValue();
+   float maxAmbientValue();
+   float averageCpuValue();
+   float averageGpuValue();
+   float averageAmbientValue();
+
+   ::std::vector<float> cpuColumnData, gpuColumnData, ambientColumnData;
+   float cpuTemp, gpuTemp, ambientTemp;
 
 };
 
