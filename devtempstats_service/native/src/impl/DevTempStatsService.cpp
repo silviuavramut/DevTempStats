@@ -1,248 +1,272 @@
 #include "DevTempStatsService.hpp"
+
 #include <utils/Log.h>
+
 #include <vector>
 #include <fstream>
 #include <string>
 #include <sstream>
-#include <cstdlib> 
+#include <cstdlib>
 #include <iostream>
-
 
 #ifdef LOG_TAG
 #undef LOG_TAG
 #endif
 #define LOG_TAG "devtempstats_service"
 
-namespace devtempstats {
-namespace service {
-
-::std::shared_ptr<DevTempStatsService> DevTempStatsService::S_INSTANCE = NULL;
-
-
-::std::shared_ptr<DevTempStatsService> DevTempStatsService::getInstance()
+namespace devtempstats
 {
-   if (S_INSTANCE == NULL)
+   namespace service
    {
-      S_INSTANCE = ndk::SharedRefBase::make<DevTempStatsService>();
-   }
-   return S_INSTANCE;
-}
 
-DevTempStatsService::DevTempStatsService()
-{
-   readColumnFromCSV("/vendor/etc/temperatures.csv",0,cpuColumnData);
-   readColumnFromCSV("/vendor/etc/temperatures.csv",1,gpuColumnData);
-   readColumnFromCSV("/vendor/etc/temperatures.csv",2,ambientColumnData);
+      ::std::shared_ptr<DevTempStatsService> DevTempStatsService::S_INSTANCE = NULL;
 
-}
+      ::std::shared_ptr<DevTempStatsService> DevTempStatsService::getInstance()
+      {
+         if (S_INSTANCE == NULL)
+         {
+            S_INSTANCE = ndk::SharedRefBase::make<DevTempStatsService>();
+         }
+         return S_INSTANCE;
+      }
 
-DevTempStatsService::~DevTempStatsService()
-{
+      DevTempStatsService::DevTempStatsService()
+      {
+         ReadColumnFromCSV("/vendor/etc/temperatures.csv", 0, cpu_column_data_);
+         ReadColumnFromCSV("/vendor/etc/temperatures.csv", 1, gpu_column_data_);
+         ReadColumnFromCSV("/vendor/etc/temperatures.csv", 2, ambient_column_data_);
+      }
 
-}
+      DevTempStatsService::~DevTempStatsService()
+      {
+      }
 
-::ndk::ScopedAStatus DevTempStatsService::getCpuTemperature(float* _aidl_return)
-{
+      ::ndk::ScopedAStatus DevTempStatsService::getCpuTemperature(float *_aidl_return)
+      {
 
+         *_aidl_return = cpu_value();
+         return ndk::ScopedAStatus::ok();
+      }
 
-   *_aidl_return = cpuValue();
-   return ndk::ScopedAStatus::ok();
-}
+      ::ndk::ScopedAStatus DevTempStatsService::getGpuTemperature(float *_aidl_return)
+      {
 
-::ndk::ScopedAStatus DevTempStatsService::getGpuTemperature(float* _aidl_return)
-{
-   
-   *_aidl_return = gpuValue();
-   return ndk::ScopedAStatus::ok();
-}
+         *_aidl_return = gpu_value();
+         return ndk::ScopedAStatus::ok();
+      }
 
-::ndk::ScopedAStatus DevTempStatsService::getAmbientTemperature(float* _aidl_return)
-{
-   
+      ::ndk::ScopedAStatus DevTempStatsService::getAmbientTemperature(float *_aidl_return)
+      {
 
-   *_aidl_return = ambientValue();
-   return ndk::ScopedAStatus::ok();
-}
+         *_aidl_return = ambient_value();
+         return ndk::ScopedAStatus::ok();
+      }
 
-::ndk::ScopedAStatus DevTempStatsService::getAverageCpuTemperature(float* _aidl_return)
-{
+      ::ndk::ScopedAStatus DevTempStatsService::getAverageCpuTemperature(float *_aidl_return)
+      {
 
-   *_aidl_return = averageCpuValue();
-   return ndk::ScopedAStatus::ok();
-}
+         *_aidl_return = average_cpu_value();
+         return ndk::ScopedAStatus::ok();
+      }
 
-::ndk::ScopedAStatus DevTempStatsService::getAverageGpuTemperature(float* _aidl_return)
-{
+      ::ndk::ScopedAStatus DevTempStatsService::getAverageGpuTemperature(float *_aidl_return)
+      {
 
-   *_aidl_return = averageGpuValue();
-   return ndk::ScopedAStatus::ok();
-}
+         *_aidl_return = average_gpu_value();
+         return ndk::ScopedAStatus::ok();
+      }
 
-::ndk::ScopedAStatus DevTempStatsService::getAverageAmbientTemperature(float* _aidl_return)
-{
+      ::ndk::ScopedAStatus DevTempStatsService::getAverageAmbientTemperature(float *_aidl_return)
+      {
 
-   *_aidl_return = averageAmbientValue();
-   return ndk::ScopedAStatus::ok();
-}
+         *_aidl_return = average_ambient_value();
+         return ndk::ScopedAStatus::ok();
+      }
 
-::ndk::ScopedAStatus DevTempStatsService::getMaxCpuTemperature(float* _aidl_return)
-{
+      ::ndk::ScopedAStatus DevTempStatsService::getMaxCpuTemperature(float *_aidl_return)
+      {
 
-   *_aidl_return = maxCpuValue();
-   return ndk::ScopedAStatus::ok();
-}
+         *_aidl_return = max_cpu_value();
+         return ndk::ScopedAStatus::ok();
+      }
 
-::ndk::ScopedAStatus DevTempStatsService::getMaxGpuTemperature(float* _aidl_return)
-{
-   *_aidl_return = maxGpuValue();
-   return ndk::ScopedAStatus::ok();
-}
+      ::ndk::ScopedAStatus DevTempStatsService::getMaxGpuTemperature(float *_aidl_return)
+      {
+         *_aidl_return = max_gpu_value();
+         return ndk::ScopedAStatus::ok();
+      }
 
-::ndk::ScopedAStatus DevTempStatsService::getMaxAmbientTemperature(float* _aidl_return)
-{
-   *_aidl_return = maxAmbientValue();
-   return ndk::ScopedAStatus::ok();
-}
+      ::ndk::ScopedAStatus DevTempStatsService::getMaxAmbientTemperature(float *_aidl_return)
+      {
+         *_aidl_return = max_ambient_value();
+         return ndk::ScopedAStatus::ok();
+      }
 
-void DevTempStatsService::readColumnFromCSV(const std::string& filename, int colIndex, std::vector<float>& columnData) {
-    std::ifstream file(filename);
-    std::string line;
+      void DevTempStatsService::ReadColumnFromCSV(const std::string &filename, int col_index, std::vector<float> &column_data)
+      {
+         std::ifstream file(filename);
+         std::string line;
 
-    if (file.is_open()) {
-        while (getline(file, line)) {
-            std::stringstream ss(line);
-            std::string cell;
-            int currentCol = 0;
-            while (getline(ss, cell, ',') && currentCol <= colIndex) {
-                if (currentCol == colIndex) {
-                    columnData.push_back(std::stof(cell));
-                    break; // Stop reading after finding the desired column
-                }
-                ++currentCol;
+         if (file.is_open())
+         {
+            while (getline(file, line))
+            {
+               std::stringstream ss(line);
+               std::string cell;
+               int current_col = 0;
+               while (getline(ss, cell, ',') && current_col <= col_index)
+               {
+                  if (current_col == col_index)
+                  {
+                     column_data.push_back(std::stof(cell));
+                     break; // Stop reading after finding the desired column
+                  }
+                  ++current_col;
+               }
             }
-        }
-        file.close();
-    } else {
-        std::cerr << "Unable to open file: " << filename << std::endl;
-    }
-}
+            file.close();
+         }
+         else
+         {
+            std::cerr << "Unable to open file: " << filename << std::endl;
+         }
+      }
 
-float DevTempStatsService::getCpuNextValue(std::vector<float>& vec) {
-    static std::size_t index_cpu = 0;
+      float DevTempStatsService::GetCpuNextValue(std::vector<float> &vec)
+      {
+         static std::size_t index_cpu = 0;
 
-    if (index_cpu >= vec.size()) {
-        index_cpu = 0;
-    }
+         if (index_cpu >= vec.size())
+         {
+            index_cpu = 0;
+         }
 
-    return vec[index_cpu++];
-}
-float DevTempStatsService::getGpuNextValue(std::vector<float>& vec) {
-    static std::size_t index_gpu = 0;
+         return vec[index_cpu++];
+      }
 
-    if (index_gpu >= vec.size()) {
-        index_gpu = 0;
-    }
+      float DevTempStatsService::GetGpuNextValue(std::vector<float> &vec)
+      {
+         static std::size_t index_gpu = 0;
 
-    return vec[index_gpu++];
-}
-float DevTempStatsService::getAmbientNextValue(std::vector<float>& vec) {
-    static std::size_t index_ambient = 0;
+         if (index_gpu >= vec.size())
+         {
+            index_gpu = 0;
+         }
 
-    if (index_ambient >= vec.size()) {
-        index_ambient = 0;
-    }
+         return vec[index_gpu++];
+      }
 
-    return vec[index_ambient++];
-}
+      float DevTempStatsService::GetAmbientNextValue(std::vector<float> &vec)
+      {
+         static std::size_t index_ambient = 0;
 
-float DevTempStatsService::calculateMaxValue(const std::vector<float>& vec) {
-    float max = vec[0]; // Initialize max to the first element of the vector
+         if (index_ambient >= vec.size())
+         {
+            index_ambient = 0;
+         }
 
-    // Iterate through the vector to find the maximum element
-    for (size_t i = 1; i < vec.size(); ++i) {
-        if (vec[i] > max) {
-            max = vec[i];
-        }
-    }
+         return vec[index_ambient++];
+      }
 
-    return max;
-}
+      float DevTempStatsService::CalculateMaxValue(const std::vector<float> &vec)
+      {
+         float max = vec[0]; // Initialize max to the first element of the vector
 
-float DevTempStatsService::calculateAverageValue(const std::vector<float>& vec)
-{
-        float sum = 0.0;
-       
-        for ( int i=0; i < (int)vec.size(); i++)
-        {
+         // Iterate through the vector to find the maximum element
+         for (size_t i = 1; i < vec.size(); ++i)
+         {
+            if (vec[i] > max)
+            {
+               max = vec[i];
+            }
+         }
+
+         return max;
+      }
+
+      float DevTempStatsService::CalculateAverageValue(const std::vector<float> &vec)
+      {
+         float sum = 0.0;
+
+         for (int i = 0; i < (int)vec.size(); i++)
+         {
             sum += vec[i];
-        }
-       
-        return ( sum / vec.size());
-}
+         }
 
+         return (sum / vec.size());
+      }
 
+      float DevTempStatsService::cpu_value()
+      {
 
-float DevTempStatsService::cpuValue(){
-   
-   cpuTemp = getCpuNextValue(cpuColumnData);
+         cpu_temp_ = GetCpuNextValue(cpu_column_data_);
 
-   return cpuTemp;
-}
+         return cpu_temp_;
+      }
 
-float DevTempStatsService::gpuValue(){
-   
-   gpuTemp = getGpuNextValue(gpuColumnData);
+      float DevTempStatsService::gpu_value()
+      {
 
-   return gpuTemp;
-}
+         gpu_temp_ = GetGpuNextValue(gpu_column_data_);
 
-float DevTempStatsService::ambientValue(){
-   
-   ambientTemp = getAmbientNextValue(ambientColumnData);
+         return gpu_temp_;
+      }
 
-   return ambientTemp;
-}
+      float DevTempStatsService::ambient_value()
+      {
 
-float DevTempStatsService::maxCpuValue(){
-   
-   cpuTemp = calculateMaxValue(cpuColumnData);
+         ambient_temp_ = GetAmbientNextValue(ambient_column_data_);
 
-   return cpuTemp;
-}
+         return ambient_temp_;
+      }
 
-float DevTempStatsService::maxGpuValue(){
-   
-   gpuTemp = calculateMaxValue(gpuColumnData);
-   return gpuTemp;
-}
+      float DevTempStatsService::max_cpu_value()
+      {
 
-float DevTempStatsService::maxAmbientValue(){
-   
-   ambientTemp = calculateMaxValue(ambientColumnData);
+         cpu_temp_ = CalculateMaxValue(cpu_column_data_);
 
-   return ambientTemp;
-}
+         return cpu_temp_;
+      }
 
-float DevTempStatsService::averageCpuValue(){
-   
-   cpuTemp = calculateAverageValue(cpuColumnData);
+      float DevTempStatsService::max_gpu_value()
+      {
 
-   return cpuTemp;
-}
+         gpu_temp_ = CalculateMaxValue(gpu_column_data_);
 
-float DevTempStatsService::averageGpuValue(){
-   
-   gpuTemp = calculateAverageValue(gpuColumnData);
-   return gpuTemp;
-}
+         return gpu_temp_;
+      }
 
-float DevTempStatsService::averageAmbientValue(){
-   
-   ambientTemp = calculateAverageValue(ambientColumnData);
+      float DevTempStatsService::max_ambient_value()
+      {
 
-   return ambientTemp;
-}
+         ambient_temp_ = CalculateMaxValue(ambient_column_data_);
 
+         return ambient_temp_;
+      }
 
-}
+      float DevTempStatsService::average_cpu_value()
+      {
+
+         cpu_temp_ = CalculateAverageValue(cpu_column_data_);
+
+         return cpu_temp_;
+      }
+
+      float DevTempStatsService::average_gpu_value()
+      {
+
+         gpu_temp_ = CalculateAverageValue(gpu_column_data_);
+
+         return gpu_temp_;
+      }
+
+      float DevTempStatsService::average_ambient_value()
+      {
+
+         ambient_temp_ = CalculateAverageValue(ambient_column_data_);
+
+         return ambient_temp_;
+      }
+
+   }
 }
