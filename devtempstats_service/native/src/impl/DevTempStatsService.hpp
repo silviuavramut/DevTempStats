@@ -62,4 +62,5 @@ namespace devtempstats
    }
 }
 
+
 #endif // DEVTEMPSTATS_SERVICE
