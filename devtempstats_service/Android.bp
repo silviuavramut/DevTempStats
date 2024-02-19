@@ -4,6 +4,7 @@ cc_binary {
     local_include_dirs: ["native/src/impl"],
     vendor: true,
     init_rc: ["devtempstats_service.rc"],
+    required: [ "temperatures.csv" ],
     shared_libs: [
         "liblog",
         "libutils",
@@ -19,6 +20,13 @@ cc_binary {
         "-Wunreachable-code",
         "-Wshadow",
     ],
+}
+
+prebuilt_etc {
+    name: "temperatures.csv",
+    src: "temperatures.csv",
+    filename_from_src: true,
+    vendor: true,
 }
 
 aidl_interface {
@@ -40,4 +48,13 @@ aidl_interface {
             enabled: true,
         },
     },
+    versions_with_info: [
+        {
+            version: "2",
+            imports: [],
+        },
+
+    ],
+    frozen: true,
+
 }

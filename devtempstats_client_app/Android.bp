@@ -1,0 +1,24 @@
+android_app {
+    name: "DevTempStatsClientApp",
+    srcs: [ "app/src/main/java/**/*.java" ],
+    resource_dirs: [ "app/src/main/res" ],
+    static_libs: [
+        "devtempstats.service.devtempstatsmanager",
+        "com.google.android.material_material",
+        "androidx-constraintlayout_constraintlayout",
+        "androidx.test.ext.junit",
+        "androidx.test.espresso.core",
+    ],
+    required: [
+        "devtempstats.service.devtempstatsmanager",
+    ],
+    optimize: {
+        enabled: false
+    },
+    system_ext_specific: true,
+    platform_apis: true,
+    certificate: "platform",
+    use_embedded_native_libs: true,
+    privileged: true,
+    manifest: "app/src/main/AndroidManifest.xml",
+}
