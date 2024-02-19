@@ -1,0 +1,26 @@
+R_DEF: Internal format may change without notice
+local
+color black
+color white
+drawable ic_launcher_background
+drawable ic_launcher_foreground
+id ambientAverageButton
+id ambientButton
+id ambientMaxButton
+id ambientTempTextView
+id cpuAverageButton
+id cpuButton
+id cpuMaxButton
+id cpuTempTextView
+id gpuAverageButton
+id gpuButton
+id gpuMaxButton
+id gpuTempTextView
+layout activity_main
+mipmap ic_launcher
+mipmap ic_launcher_round
+string app_name
+style Base.Theme.MyApplication
+style Theme.MyApplication
+xml backup_rules
+xml data_extraction_rules
